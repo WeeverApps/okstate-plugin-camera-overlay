@@ -124,6 +124,27 @@ static NSString* toBase64(NSData* data) {
            (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad);
 }
 
+- ( int )getGCD:( int )width :( int )height
+{
+    
+    int t, r;
+    
+    if ( width < height ) {
+        t = width;
+        width = height;
+        height = t;
+    }
+    r = width % height;
+    
+    if (r == 0) {
+        
+        return height;
+    } else {
+        
+        return [self getGCD:height :r];
+    }
+}
+
 - (void)takePicture:(CDVInvokedUrlCommand*)command
 {
     self.hasPendingOperation = YES;
@@ -174,6 +195,30 @@ static NSString* toBase64(NSData* data) {
         cameraPicker.callbackId = command.callbackId;
         // we need to capture this state for memory warnings that dealloc this object
         cameraPicker.webView = weakSelf.webView;
+
+        CGRect screenRect = [[UIScreen mainScreen] bounds];
+        CGFloat screenWidth = screenRect.size.width;
+        CGFloat screenHeight = screenRect.size.height;
+        int gcd = [self getGCD:screenWidth :screenHeight];
+        NSString *aspectRatio = [NSString stringWithFormat:@"%f%@%f",  screenWidth / gcd, @":", screenHeight / gcd];
+        UIView* overlayView;
+        
+        if ( [aspectRatio  isEqual: @"3.000000:4.000000"] ) {
+            
+            overlayView = [ [ UIView alloc ] initWithFrame:CGRectMake( ([ UIScreen mainScreen ].bounds.size.width ) / 2 - 384, ( [ UIScreen mainScreen ].bounds.size.height ) / 2 - 384, 768, 768 ) ];
+            overlayView.backgroundColor = [ UIColor colorWithPatternImage:[ UIImage imageNamed:@"overlayLarge.png" ] ];
+        }
+        else {
+            
+            overlayView = [ [ UIView alloc ] initWithFrame:CGRectMake( ([ UIScreen mainScreen ].bounds.size.width ) / 2 - 225, ( [ UIScreen mainScreen ].bounds.size.height ) / 2 - 225, 450, 450 ) ];
+            overlayView.backgroundColor = [ UIColor colorWithPatternImage:[ UIImage imageNamed:@"overlaySmall.png" ] ];
+        }
+        
+        [ overlayView.layer setOpaque:NO ];
+        overlayView.opaque = NO;
+        cameraPicker.showsCameraControls = YES;
+        cameraPicker.cameraOverlayView = overlayView;
+        // end of overlay addition
         
         // Perform UI operations on the main thread
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -345,7 +390,7 @@ static NSString* toBase64(NSData* data) {
                         self.metadata = [[NSMutableDictionary alloc] init];
                         
                         NSMutableDictionary* EXIFDictionary = [[controllerMetadata objectForKey:(NSString*)kCGImagePropertyExifDictionary]mutableCopy];
-                        if (EXIFDictionary)	{
+                        if (EXIFDictionary) {
                             [self.metadata setObject:EXIFDictionary forKey:(NSString*)kCGImagePropertyExifDictionary];
                         }
                         
@@ -537,15 +582,15 @@ static NSString* toBase64(NSData* data) {
 
 - (CLLocationManager*)locationManager
 {
-	if (locationManager != nil) {
-		return locationManager;
-	}
+    if (locationManager != nil) {
+        return locationManager;
+    }
     
-	locationManager = [[CLLocationManager alloc] init];
-	[locationManager setDesiredAccuracy:kCLLocationAccuracyNearestTenMeters];
-	[locationManager setDelegate:self];
+    locationManager = [[CLLocationManager alloc] init];
+    [locationManager setDesiredAccuracy:kCLLocationAccuracyNearestTenMeters];
+    [locationManager setDelegate:self];
     
-	return locationManager;
+    return locationManager;
 }
 
 - (void)locationManager:(CLLocationManager*)manager didUpdateToLocation:(CLLocation*)newLocation fromLocation:(CLLocation*)oldLocation

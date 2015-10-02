@@ -21,7 +21,7 @@
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:rim="http://www.blackberry.com/ns/widgets"
-    id="okstate-plugin-camera-overlay"
+    id="com.weever.okstate-plugin-camera-overlay"
     version="0.1-dev">
     <name>Camera</name>
     <description>Cordova Camera Plugin</description>
@@ -119,6 +119,9 @@
          <config-file target="*-Info.plist" parent="NSLocationWhenInUseUsageDescription">
              <string></string>
          </config-file>
+         
+         <asset src="www/overlayLarge.png" target="images/overlayLarge.png" />
+         <asset src="www/overlaySmall.png" target="images/overlaySmall.png" />
 
      </platform>
 
