@@ -19,6 +19,10 @@
 
 # okstate-plugin-camera-overlay
 
+*NOTE*
+This plugin is forked from https://github.com/wkevina/okstate-plugin-camera-overlay
+The original plugin is no longer maintained.
+
 This plugin defines a global `navigator.camera` object, which provides an API for taking pictures and for choosing images from
 the system's image library.
 
