@@ -20,7 +20,6 @@
 # okstate-plugin-camera-overlay
 
 *NOTE*
-
 This plugin is forked from https://github.com/wkevina/okstate-plugin-camera-overlay
 The original plugin is no longer maintained.
 
